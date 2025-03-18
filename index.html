@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Draw v1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="drawingCanvas"></canvas>
+  <div class="toolbar">
+    <div class="toolbar-row">
+      <button id="penBtn" class="tool-btn active" title="Pen">✏️</button>
+      <button id="highlighterBtn" class="tool-btn" title="Highlighter">🖍️</button>
+      <button id="eraserBtn" class="tool-btn" title="Eraser">🧽</button>
+      <button id="rectBtn" class="tool-btn" title="Rectangle">▭</button>
+      <button id="circleBtn" class="tool-btn" title="Circle">◯</button>
+      <button id="lineBtn" class="tool-btn" title="Line">➖</button>
+      <button id="textBtn" class="tool-btn" title="Text">🅰️</button>
+      <button id="moveBtn" class="tool-btn" title="Move">↕️</button>
+      <button id="clearBtn" class="tool-btn" title="Clear">🗑️</button>
+      <button id="saveBtn" class="tool-btn" title="Save">💾</button>
+      <input type="color" id="colorPicker" title="Choose Color" value="#000000">
+    </div>
+    <div class="slider-row">
+      <label for="brushSize">Brush Size:</label>
+      <input type="range" id="brushSize" min="1" max="50" value="2" title="Brush Size">
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
