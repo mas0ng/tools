@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="https://www.mas0ng.com/assets/global/favicon.png" type="image/png">
+  <title>404 - Page Not Found</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet" />
+  <style>
+  :root {
+	--background-color: #121212;
+	--surface-color: #1e1e1e;
+	--text-color: #e0e0e0;
+	--accent-color: #bb86fc;
+	--accent-hover: #9b59b6;
+	--border-color: #333;
+	--card-shadow: rgba(0, 0, 0, 0.7);
+	}
+	* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	}
+
+	body {
+	font-family: 'Montserrat', sans-serif;
+	background: var(--background-color);
+	color: var(--text-color);
+	line-height: 1.6;
+	}
+
+  .not-found {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 20px;
+	}
+
+	.not-found .container {
+	text-align: center;
+	animation: fadeIn 1s ease-out;
+	}
+
+	.error-code {
+	font-size: 6em;
+	font-weight: 700;
+	margin-bottom: 20px;
+	color: var(--accent-color);
+	animation: pulse 2s infinite;
+	}
+
+	@keyframes pulse {
+	0% { transform: scale(1); }
+	50% { transform: scale(1.1); }
+	100% { transform: scale(1); }
+	}
+
+	@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(-20px); }
+	to { opacity: 1; transform: translateY(0); }
+	}
+	
+	.btn {
+	display: inline-block;
+	background: var(--accent-color);
+	color: var(--surface-color);
+	padding: 15px 30px;
+	border: none;
+	border-radius: 30px;
+	font-size: 1em;
+	text-decoration: none;
+	transition: background 0.3s;
+	}
+
+	.btn:hover {
+	background: var(--accent-hover);
+	}
+
+</style>
+</head>
+<body class="not-found">
+  <div class="container">
+    <div class="error-code">Uh Oh!</div>
+    <h1>Subdomain Error</h1>
+    <p>You can not nagivate through this subdomain.</p>
+	<a href="https://www.mas0ng.com" class="btn" style="margin-top: 30px;">Go To mas0ng.com</a>
+  </div>
+</body>
+</html>
