@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notepad</title>
+  <link rel="icon" href="https://www.mas0ng.com/assets/global/favicon.png" type="image/png">
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: #fff;
+      color: #000;
+    }
+    #tabs {
+      display: flex;
+      gap: 0.5em;
+      padding: 0.5em;
+      background: #121212;
+      overflow-x: auto;
+    }
+    .tab {
+      background: #ccc;
+      padding: 0.3em 0.8em;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: #bb86fc;
+      color: #121212;
+      font-weight: bold;
+    }
+    textarea {
+      flex: 1;
+      padding: 1em;
+      font-size: 16px;
+      border: none;
+      resize: none;
+      outline: none;
+    }
+    footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      padding: 0.5em;
+      background: #121212;
+	  color: #bb86fc;
+    }
+    .left, .right {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+    button, label {
+      padding: 0.5em 1em;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      background: #bb86fc;
+      color: #1e1e1e;
+      border-radius: 4px;
+	  outline: 3px solid transparent;
+	  outline-offset: 0;
+    }
+    button:hover, label:hover {
+      outline-color: #fff;
+    }
+    input[type="file"] {
+      display: none;
+	  color: #bb86fc;
+    }
+    .counter, .timestamp {
+      font-size: 14px;
+	  color: #bb86fc;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="tabs"></div>
+
+  <textarea id="notepad" placeholder="Start typing..."></textarea>
+
+  <footer>
+    <div class="left">
+      <button onclick="newTab()">New Tab</button>
+      <button onclick="renameTab()">Rename Tab</button>
+      <button onclick="deleteTab()">Delete Tab</button>
+      <button onclick="clearNote()">Clear Tab</button>
+      <button onclick="exportNote()">Export Tab</button>
+      <label for="importFile">Import</label>
+      <input type="file" id="importFile" accept=".txt" />
+    </div>
+    <div class="right">
+      <span class="counter" id="stats">Words: 0 | Characters: 0</span>
+      <span class="timestamp" id="saved">Last saved: never</span>
+    </div>
+  </footer>
+
+  <script>
+    const notepad = document.getElementById("notepad");
+    const stats = document.getElementById("stats");
+    const saved = document.getElementById("saved");
+    const tabsContainer = document.getElementById("tabs");
+    const fileInput = document.getElementById("importFile");
+
+    let tabs = JSON.parse(localStorage.getItem("tabs")) || [{ name: "Note 1", id: "note1" }];
+    let currentTabId = localStorage.getItem("currentTabId") || tabs[0].id;
+
+    function saveTabs() {
+      localStorage.setItem("tabs", JSON.stringify(tabs));
+      localStorage.setItem("currentTabId", currentTabId);
+    }
+
+    function renderTabs() {
+      tabsContainer.innerHTML = "";
+      tabs.forEach(tab => {
+        const tabBtn = document.createElement("div");
+        tabBtn.textContent = tab.name;
+        tabBtn.className = "tab" + (tab.id === currentTabId ? " active" : "");
+        tabBtn.onclick = () => switchTab(tab.id);
+        tabsContainer.appendChild(tabBtn);
+      });
+    }
+
+    function switchTab(id) {
+      saveCurrentNote();
+      currentTabId = id;
+      loadCurrentNote();
+      saveTabs();
+      renderTabs();
+    }
+
+    function saveCurrentNote() {
+      localStorage.setItem(currentTabId, notepad.value);
+      localStorage.setItem(currentTabId + "_time", Date.now());
+    }
+
+    function loadCurrentNote() {
+      notepad.value = localStorage.getItem(currentTabId) || "";
+      const time = localStorage.getItem(currentTabId + "_time");
+      saved.textContent = time ? `Last saved: ${new Date(+time).toLocaleString()}` : "Last saved: never";
+      updateStats();
+    }
+
+    function newTab() {
+      const name = prompt("New tab name:");
+      if (!name) return;
+      const id = "note" + Date.now();
+      tabs.push({ name, id });
+      currentTabId = id;
+      saveTabs();
+      renderTabs();
+      loadCurrentNote();
+    }
+
+    function renameTab() {
+      const tab = tabs.find(t => t.id === currentTabId);
+      const newName = prompt("Rename tab:", tab.name);
+      if (!newName) return;
+      tab.name = newName;
+      saveTabs();
+      renderTabs();
+    }
+
+    function deleteTab() {
+      if (tabs.length === 1) {
+        alert("At least one tab is required.");
+        return;
+      }
+      if (!confirm("Delete this tab and its contents?")) return;
+      tabs = tabs.filter(t => t.id !== currentTabId);
+      localStorage.removeItem(currentTabId);
+      localStorage.removeItem(currentTabId + "_time");
+      currentTabId = tabs[0].id;
+      saveTabs();
+      renderTabs();
+      loadCurrentNote();
+    }
+
+    function clearNote() {
+      if (confirm("Clear all text in this note?")) {
+        notepad.value = "";
+        saveCurrentNote();
+        updateStats();
+      }
+    }
+
+    function exportNote() {
+      const blob = new Blob([notepad.value], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = tabs.find(t => t.id === currentTabId).name + ".txt";
+      link.click();
+    }
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          notepad.value = e.target.result;
+          saveCurrentNote();
+          updateStats();
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    function updateStats() {
+      const text = notepad.value;
+      const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+      const charCount = text.length;
+      stats.textContent = `Words: ${wordCount} | Characters: ${charCount}`;
+    }
+
+    notepad.addEventListener("input", () => {
+      saveCurrentNote();
+      updateStats();
+    });
+
+    // Init
+    renderTabs();
+    loadCurrentNote();
+  </script>
+</body>
+</html>
